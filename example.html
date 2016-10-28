@@ -30,35 +30,51 @@
       <p>Printing coordinates of the first 10 points in facial features:</p>
       <p id="positions"></p>
 			<script>
-				var videoInput = document.getElementById('video');
-        
-        var ctracker = new clm.tracker();
-        ctracker.init(pModel);
-        ctracker.start(videoInput);
+	var videoInput = document.getElementById('video');
 				
-				function positionLoop() {
-          requestAnimationFrame(positionLoop);
-          var positions = ctracker.getCurrentPosition();
-          // do something with the positions ...
-          // print the positions
-          var positionString = "";
-          if (positions) {
-            for (var p = 0;p < 10;p++) {
-              positionString += "featurepoint "+p+" : ["+positions[p][0].toFixed(2)+","+positions[p][1].toFixed(2)+"]<br/>";
-            }
-            document.getElementById('positions').innerHTML = positionString;
-          }
-        }
-        positionLoop();
+	navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+
+	if (navigator.getUserMedia) {       
+		navigator.getUserMedia({video: true}, handleVideo, videoError);
+	}
 				
-				var canvasInput = document.getElementById('canvas');
-				var cc = canvasInput.getContext('2d');
-				function drawLoop() {
-          requestAnimationFrame(drawLoop);
-          cc.clearRect(0, 0, canvasInput.width, canvasInput.height);
-          ctracker.draw(canvasInput);
-        }
-        drawLoop();
+	function handleVideo(stream) {
+		videoInput.src = window.URL.createObjectURL(stream);
+		 var ctracker = new clm.tracker();
+        	ctracker.init(pModel);
+       		ctracker.start(videoInput);
+		
+		function positionLoop() {
+         		 requestAnimationFrame(positionLoop);
+         		 var positions = ctracker.getCurrentPosition();
+         		 // do something with the positions ...
+         		 // print the positions
+         		 var positionString = "";
+          		if (positions) {
+            			for (var p = 0;p < 10;p++) {
+             				 positionString += "featurepoint "+p+" : ["+positions[p][0].toFixed(2)+","+positions[p][1].toFixed(2)+"]<br/>";
+            			}
+           			 document.getElementById('positions').innerHTML = positionString;
+         		 }
+        	}
+		
+		positionLoop();
+				
+		var canvasInput = document.getElementById('canvas');
+		var cc = canvasInput.getContext('2d');
+		
+		function drawLoop() {
+          		requestAnimationFrame(drawLoop);
+         		 cc.clearRect(0, 0, canvasInput.width, canvasInput.height);
+         		 ctracker.draw(canvasInput);
+		}
+		
+		drawLoop();
+	}
+				
+	function videoError() {
+		// do something
+	}
 			</script>
 		</div>
 	</body>
